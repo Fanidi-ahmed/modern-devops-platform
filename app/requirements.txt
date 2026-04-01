@@ -5,3 +5,5 @@ python-dotenv
 email-validator
 sqlalchemy
 psycopg2-binary
+pytest
+httpx
