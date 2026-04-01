@@ -3,3 +3,5 @@ uvicorn
 pydantic
 python-dotenv
 email-validator
+sqlalchemy
+psycopg2-binary

@@ -1,23 +1,28 @@
-from app.src.schemas.user import UserCreate, UserResponse
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
-users_db: list[UserResponse] = []
-current_id = 1
+from app.src.models.user import User
+from app.src.schemas.user import UserCreate
 
 
-def create_user(user_data: UserCreate) -> UserResponse:
-    global current_id
-
-    user = UserResponse(
-        id=current_id,
+def create_user(db: Session, user_data: UserCreate) -> User:
+    user = User(
         name=user_data.name,
         email=user_data.email,
     )
 
-    users_db.append(user)
-    current_id += 1
+    try:
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+        print("SERVICE: user created successfully")
+        return user
 
-    return user
+    except IntegrityError as exc:
+        print("SERVICE: IntegrityError caught")
+        db.rollback()
+        raise ValueError("Email already exists") from exc
 
 
-def list_users() -> list[UserResponse]:
-    return users_db
+def list_users(db: Session) -> list[User]:
+    return db.query(User).all()
