@@ -1,3 +1,5 @@
+import json
+from app.src.cache.redis_client import redis_client
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -14,6 +16,7 @@ def create_user(db: Session, user_data: UserCreate) -> User:
     try:
         db.add(user)
         db.commit()
+        redis_client.delete("users")
         db.refresh(user)
         print("SERVICE: user created successfully")
         return user
@@ -24,5 +27,22 @@ def create_user(db: Session, user_data: UserCreate) -> User:
         raise ValueError("Email already exists") from exc
 
 
-def list_users(db: Session) -> list[User]:
-    return db.query(User).all()
+def list_users(db):
+    cached_users = redis_client.get("users")
+
+    if cached_users:
+        print("CACHE HIT")
+        return json.loads(cached_users)
+
+    print("CACHE MISS")
+
+    users = db.query(User).all()
+
+    users_data = [
+        {"id": u.id, "name": u.name, "email": u.email}
+        for u in users
+    ]
+
+    redis_client.set("users", json.dumps(users_data), ex=60)
+
+    return users_data
