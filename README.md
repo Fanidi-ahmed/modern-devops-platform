@@ -1,6 +1,6 @@
 # modern-devops-platform
 
-Projet fil rouge pour apprendre le DevOps moderne de façon progressive, pratique et documentée.
+Projet fil rouge du DevOps moderne de façon progressive, pratique et documentée.
 
 ## Objectifs
 
@@ -17,18 +17,6 @@ Construire une plateforme complète en plusieurs blocs :
 - Kubernetes
 - Terraform
 - Déploiement cloud
-
-## Méthode d'apprentissage
-
-Chaque bloc suit la même logique :
-
-1. comprendre le rôle du bloc
-2. comprendre la structure des fichiers
-3. lire le code
-4. expliquer le code
-5. écrire le code soi-même
-6. tester
-7. documenter les erreurs et solutions
 
 ## Structure du projet
 
@@ -57,6 +45,3 @@ Chaque bloc suit la même logique :
 12. Terraform
 13. Cloud
 
-## Règle de travail
-
-Ne jamais passer au bloc suivant sans comprendre le précédent.
