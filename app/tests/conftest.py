@@ -2,6 +2,8 @@ import os
 import tempfile
 
 import pytest
+from app.src import services
+from app.src.services import user_service
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -38,7 +40,8 @@ def client():
     Base.metadata.create_all(bind=engine)
 
     app.dependency_overrides[get_db] = override_get_db
-
+    user_service.redis_client = FakeRedis()
+    
     with TestClient(app) as test_client:
         yield test_client
 
@@ -49,3 +52,16 @@ def client():
 def pytest_sessionfinish(session, exitstatus):
     os.close(db_fd)
     os.unlink(db_path)
+    
+class FakeRedis:
+    def __init__(self):
+        self.store = {}
+
+    def get(self, key):
+        return self.store.get(key)
+
+    def set(self, key, value, ex=None):
+        self.store[key] = value
+
+    def delete(self, key):
+        self.store.pop(key, None)
